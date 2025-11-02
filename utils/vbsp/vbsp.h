@@ -23,15 +23,6 @@
 #pragma warning( disable: 4706 )
 #endif
 
-typedef enum {
-    PLATFORM_NONE = 0,
-    PLATFORM_XBOX360,
-    PLATFORM_PS3
-} Platform_t;
-
-extern Platform_t g_Platform;
-
-bool ParsePlatformFlag(int argc, char **argv);
 
 class CUtlBuffer;
 
@@ -583,6 +574,3 @@ void RemoveAreaPortalBrushes_R( node_t *node );
 dtexdata_t *GetTexData( int index );
 
 #endif
-
-
-
