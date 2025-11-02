@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright Â© 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -23,11 +23,18 @@
 #pragma warning( disable: 4706 )
 #endif
 
+typedef enum {
+    PLATFORM_NONE = 0,
+    PLATFORM_XBOX360,
+    PLATFORM_PS3
+} Platform_t;
+
+extern Platform_t g_Platform;
+
 class CUtlBuffer;
 
 #define	MAX_BRUSH_SIDES	128
 #define	CLIP_EPSILON	0.1
-
 #define	TEXINFO_NODE		-1		// side is allready on a node
 
 // this will output glview files for the given brushmodel.  Brushmodel 1 is the world, 2 is the first brush entity, etc.
@@ -574,4 +581,5 @@ void RemoveAreaPortalBrushes_R( node_t *node );
 dtexdata_t *GetTexData( int index );
 
 #endif
+
 
