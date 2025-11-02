@@ -8,3 +8,7 @@ Replace [console] with xbox360 or ps3 <br>
 Replace [map] with your map name <br>
 Example: <br>
 vbsp -xbox360 mymap.vmf <br>
+Requirements: <br>
+A softmodded/hardmodded Xbox 360 or PlayStation 3 console <br>
+A legal copy of The Orange Box for console <br>
+A computer with Windows 7 or newer <br>
