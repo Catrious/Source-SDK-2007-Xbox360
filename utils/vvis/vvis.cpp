@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright Â© 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -22,6 +22,12 @@
 #include "tools_minidump.h"
 #include "loadcmdline.h"
 #include "byteswap.h"
+
+#define BIG_ENDIAN_TARGET
+#ifdef BIG_ENDIAN_TARGET
+header.version = 20; // Xbox 360
+SwapDHeader(&header);
+#endif
 
 
 int			g_numportals;
@@ -438,9 +444,24 @@ void LoadPortals (char *name)
 		data.SetSize( g_pFileSystem->Size( hFile ) );
 		g_pFileSystem->Read( data.Base(), data.Count(), hFile );
 		g_pFileSystem->Close( hFile );
+		#ifdef BIG_ENDIAN_TARGET
+for (int i = 0; i < data.Count(); i += 4)
+{
+    uint32_t *p = (uint32_t*)(data.Base() + i);
+    *p = SWAP32(*p);
+}
+#endif
 
 		// Dump it into a temp file.
-		f = fopen( tempFile, "wt" );
+		f = fopen( tempFile, "wb" );
+		#ifdef BIG_ENDIAN_TARGET
+for (int i = 0; i < data.Count(); i += 4)
+{
+    uint32_t *p = (uint32_t*)(data.Base() + i);
+    *p = SWAP32(*p);
+}
+#endif
+
 		fwrite( data.Base(), 1, data.Count(), f );
 		fclose( f );
 
@@ -1238,3 +1259,4 @@ public:
 };
 
 EXPOSE_SINGLE_INTERFACE( CVVisDLL, ILaunchableDLL, LAUNCHABLE_DLL_INTERFACE_VERSION );
+
