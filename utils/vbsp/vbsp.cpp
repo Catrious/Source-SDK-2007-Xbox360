@@ -5,7 +5,6 @@
 // $NoKeywords: $
 //=============================================================================//
 
-#include <stdio.h>
 #include "vbsp.h"
 #include "detail.h"
 #include "physdll.h"
@@ -21,36 +20,7 @@
 #include "byteswap.h"
 #include "worldvertextransitionfixup.h"
 
-Platform_t g_Platform = PLATFORM_NONE; // from vbsp.h
-
-int main(int argc, char **argv)
-{
-    if (!ParsePlatformFlag(argc, argv))
-		printf("Specify -xbox360 or -ps3 to compile the map") // error if no params specified, exit
-        return 1;
-
-    return VBSPMain(argc, argv);
-}
-
-bool ParsePlatformFlag(int argc, char **argv)
-{
-    for (int i = 1; i < argc; i++)
-    {
-        if (strcmp(argv[i], "-xbox360") == 0)
-        {
-            g_Platform = PLATFORM_XBOX360; // set platform to xbox 360, bspv20
-            return true;
-        }
-        if (strcmp(argv[i], "-ps3") == 0) // set platform to playstation 3, bspv21
-        {
-            g_Platform = PLATFORM_PS3;
-            return true;
-        }
-    }
-
-    printf("Error: You must specify -xbox360 or -ps3\n");
-    return false;
-}
+Msg("VBSP Xbox360 Edition, unofficial (BSPv20)")
 
 
 extern float		g_maxLightmapDimension;
@@ -1426,6 +1396,7 @@ int main (int argc, char **argv)
 	SetupDefaultToolsMinidumpHandler();
 	return RunVBSP( argc, argv );
 }
+
 
 
 
