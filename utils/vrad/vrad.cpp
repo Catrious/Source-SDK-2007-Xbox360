@@ -2354,6 +2354,82 @@ void VRAD_Finish()
 
 	Msg( "Writing %s\n", platformPath );
 	VMPI_SetCurrentStage( "WriteBSPFile" );
+	/* Swap 16-bit value */
+unsigned short swap16(unsigned short v) {
+    return (v << 8) | (v >> 8);
+}
+
+/* Swap 32-bit value */
+unsigned int swap32(unsigned int v) {
+    return ((v & 0x000000FFU) << 24) |
+           ((v & 0x0000FF00U) << 8)  |
+           ((v & 0x00FF0000U) >> 8)  |
+           ((v & 0xFF000000U) >> 24);
+}
+
+/* Swap plain RGB8(A) lightmap samples (4 bytes per pixel) */
+void swap_lightmap_rgb8(unsigned char *lightdata, unsigned int size) {
+    unsigned int i;
+    for (i = 0; i + 3 < size; i += 4) {
+        unsigned int v = (lightdata[i]) |
+                         (lightdata[i + 1] << 8) |
+                         (lightdata[i + 2] << 16) |
+                         (lightdata[i + 3] << 24);
+        v = swap32(v);
+        lightdata[i]     = (unsigned char)(v & 0xFF);
+        lightdata[i + 1] = (unsigned char)((v >> 8) & 0xFF);
+        lightdata[i + 2] = (unsigned char)((v >> 16) & 0xFF);
+        lightdata[i + 3] = (unsigned char)((v >> 24) & 0xFF);
+    }
+}
+
+/* Swap DXT1/DXT5 lightmap blocks */
+void swap_lightmap_dxt(unsigned char *lightdata, unsigned int size, int dxt5) {
+    unsigned int i, blocksize = dxt5 ? 16 : 8;
+
+    for (i = 0; i + blocksize <= size; i += blocksize) {
+        unsigned short c0 = (lightdata[i + 0]) | (lightdata[i + 1] << 8);
+        unsigned short c1 = (lightdata[i + 2]) | (lightdata[i + 3] << 8);
+        c0 = swap16(c0);
+        c1 = swap16(c1);
+        lightdata[i + 0] = (unsigned char)(c0 & 0xFF);
+        lightdata[i + 1] = (unsigned char)((c0 >> 8) & 0xFF);
+        lightdata[i + 2] = (unsigned char)(c1 & 0xFF);
+        lightdata[i + 3] = (unsigned char)((c1 >> 8) & 0xFF);
+
+        if (dxt5) {
+            unsigned short a0 = (lightdata[i + 8]) | (lightdata[i + 9] << 8);
+            unsigned short a1 = (lightdata[i + 10]) | (lightdata[i + 11] << 8);
+            a0 = swap16(a0);
+            a1 = swap16(a1);
+            lightdata[i + 8]  = (unsigned char)(a0 & 0xFF);
+            lightdata[i + 9]  = (unsigned char)((a0 >> 8) & 0xFF);
+            lightdata[i + 10] = (unsigned char)(a1 & 0xFF);
+            lightdata[i + 11] = (unsigned char)((a1 >> 8) & 0xFF);
+
+            unsigned int ai = (lightdata[i + 12]) |
+                              (lightdata[i + 13] << 8) |
+                              (lightdata[i + 14] << 16) |
+                              (lightdata[i + 15] << 24);
+            ai = swap32(ai);
+            lightdata[i + 12] = (unsigned char)(ai & 0xFF);
+            lightdata[i + 13] = (unsigned char)((ai >> 8) & 0xFF);
+            lightdata[i + 14] = (unsigned char)((ai >> 16) & 0xFF);
+            lightdata[i + 15] = (unsigned char)((ai >> 24) & 0xFF);
+        } else {
+            unsigned int idx = (lightdata[i + 4]) |
+                               (lightdata[i + 5] << 8) |
+                               (lightdata[i + 6] << 16) |
+                               (lightdata[i + 7] << 24);
+            idx = swap32(idx);
+            lightdata[i + 4] = (unsigned char)(idx & 0xFF);
+            lightdata[i + 5] = (unsigned char)((idx >> 8) & 0xFF);
+            lightdata[i + 6] = (unsigned char)((idx >> 16) & 0xFF);
+            lightdata[i + 7] = (unsigned char)((idx >> 24) & 0xFF);
+        }
+    }
+}
+
 	WriteBSPFile(platformPath);
 
 	if ( g_bDumpPatches )
@@ -2973,6 +3049,7 @@ int VRAD_Main(int argc, char **argv)
 	
 	return RunVRAD( argc, argv );
 }
+
 
 
 
