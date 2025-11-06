@@ -1,4 +1,4 @@
-# Source-SDK-2007-Xbox360
+# source-sdk-2007-xbox360
 Unofficial tool to make Xbox360 Orange Box maps <br>
 This project is not affiliated with or endorsed by Valve Corporation. <br>
 Requirements: <br>
